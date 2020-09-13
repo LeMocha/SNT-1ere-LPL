@@ -8,11 +8,12 @@ from PIL import Image
 from PIL import ImageColor
 import os
 from os.path import basename
+import time
 #Fin de l'importation des dépendances
 
 root = tk.Tk()                                                                                              # Affichage de la fenêtre d'éxécution
 root.title('Ajout de cadre automatique par Manoah SERVEAUX')                                                # Pour ne pas afficher la fenêtre nécéssaire au fonctionnement du programme.
-root.geometry("600x200+10+20")
+root.geometry("400x130+10+20")
 
 log1 = tk.Text(root, height=1, width=100)
 log1.insert(tk.INSERT, "Sélectionnez un fichier")                                                           # Demande à l'utilisateur de sélectionner d'image
@@ -53,39 +54,61 @@ log3 = tk.Text(root, height=1, width=100)
 log3.insert(tk.INSERT, "Fait !")                                                                            ##
 log3.pack()
 
-lc=int(input("Tapez la taille du cadre que vous souhaitez : "))                                             # Demande a l'utilisateur quelle de cardre il souhaite régler 
+racine = tk.Tk()
+def continuer():
+    racine.withdraw()
+    try:
+        lc = int(entree.get())
+    except:
+        messagebox.showwarning(title="Erreur !", message="Taille de cadre invalide !")                          # Demander à l'utilisateur de prendre une couleur
+        quit()                                                                                                  # Stopper le programme 
 
-log4 = tk.Text(root, height=1, width=100)
-log4.insert(tk.INSERT, "Taille du cadre choisie : ", lc)                                                    ##
-log4.pack()
+    log5 = tk.Text(root, height=1, width=100)
+    log5.insert(tk.INSERT, "Traitement en cours...")                                                            # Dit à l'utilisateur que l'image est en cours de traitement.
+    log5.pack()                                                                           
 
-log5 = tk.Text(root, height=1, width=100)
-log5.insert(tk.INSERT, "Traitement en cours...")                                                            # Dit à l'utilisateur que l'image est en cours de traitement.
-log5.pack()                                                                           
+    try:                                                                                                        # Essaie de lancer le traitement d'image
+        for j in range (0,haut-1,1):                                    
+            for k in range(lc):
+                img.putpixel((k,j),couleur)
+                img.putpixel((-k,-j),couleur)
 
-try:                                                                                                        # Essaie de lancer le traitement d'image
-    for j in range (0,haut-1,1):                                    
-        for k in range(lc):
-            img.putpixel((k,j),couleur)
-            img.putpixel((-k,-j),couleur)
+        for j in range (0,larg-1,1):                                     
+            for k in range(lc):
+                img.putpixel((-j,k),couleur)
+                img.putpixel((j,-k),couleur)
+    except:                                                                                                     # Si echec,
+        messagebox.showwarning(title="Erreur !", message="Couleur ou taille de cadre invalide !")               # Demander à l'utilisateur de prendre une couleur
+        quit()                                                                                                  # Stopper le programme
 
-    for j in range (0,larg-1,1):                                     
-        for k in range(lc):
-            img.putpixel((-j,k),couleur)
-            img.putpixel((j,-k),couleur)
-except:                                                                                                     # Si echec,
-    messagebox.showwarning(title="Erreur !", message="Couleur ou taille de cadre invalide !")               # Demander à l'utilisateur de prendre une couleur
-    quit()                                                                                                  # Stopper le programme    
+    log6 = tk.Text(root, height=1, width=100)
+    log6.insert(tk.INSERT, "Terminé !")                                                            # Dit à l'utilisateur que l'image est en cours de traitement.
+    log6.pack()      
 
-nom = fileName+"-modifie"+fileExtension                                                                     # Prépare le nom du fichier modifié pour sauvegarde
+    nom = fileName+"-modifie"+fileExtension                                                                     # Prépare le nom du fichier modifié pour sauvegarde
 
-meslog5 = 'Terminé ! L\'image a été enresitrée sous :\n'+nom+'\nOuverture du résultat...'
+    meslog5 = 'L\'image a été enresitrée sous :\n'+nom  
 
-log5 = tk.Text(root, height=4, width=100)
-log5.insert(tk.INSERT, meslog5)                                                                             # Dit à l'utilisateur que le traitement est terminé et son chemin d'enregistrement
-log5.pack()   
-    
-img.save(nom)                                                                                               # Enregistre l'image avec le nom dans le chemin du fichier de base
-img.show()                                                                                                  # Affiche le résultat
+    img.save(nom)                                                                                               # Enregistre l'image avec le nom dans le chemin du fichier de base
+
+    messagebox.showinfo("Terminé !",meslog5) 
+
+    img.show()                                                                                                  # Affiche le résultat
+
+    quit()
+
+
+racine.title("Taille du cadre")
+racine.geometry("300x100+10+20")
+label = tk.Label(racine, text="Tapez la taille du cadre que vous souhaitez : ")
+label.pack()
+value = tk.StringVar(label)
+value.set("Valeur")
+entree = tk.Entry(racine, textvariable=value, width=30)
+entree.place(x=55,y=35)
+bouton = tk.Button(racine, text="Définir", fg="black", command=continuer)
+bouton.place(x=130,y=70)
+
 root.mainloop()
+racine.quit()
 #Fin du programme.
